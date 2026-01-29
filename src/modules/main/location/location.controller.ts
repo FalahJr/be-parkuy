@@ -25,25 +25,27 @@ import { UpdateStatusLocationDto } from './dto/update-status-location.dto';
 import { Location } from 'src/entities/location.entity';
 import { UpdateCapacityDto } from './dto/update-available-capacity.dto';
 
-
 @ApiTags('Location')
 @ApiBearerAuth()
 @Controller('/api/location')
 @UseInterceptors(ClassSerializerInterceptor)
 export class LocationController {
-  constructor(
-    private readonly locationService: LocationService,
-  ) { }
+  constructor(private readonly locationService: LocationService) {}
 
   @Post('create-location')
   @UseGuards(RoleGuard(Role.Admin))
   @UseGuards(JwtGuard)
-  async createLocation(@Body() createLocationDto: CreateLocationDto, @Request() req) {
-    return this.locationService.createLocation(createLocationDto, req.user.admin);
+  async createLocation(
+    @Body() createLocationDto: CreateLocationDto,
+    @Request() req,
+  ) {
+    return this.locationService.createLocation(
+      createLocationDto,
+      req.user.admin,
+    );
   }
 
   @Get('get-location')
-  @UseGuards(RoleGuard(Role.Admin))
   @UseGuards(JwtGuard)
   @HttpCode(200)
   async getLocation() {
@@ -54,10 +56,9 @@ export class LocationController {
 
   @Get('get-location/:id')
   @HttpCode(200)
-  @UseGuards(RoleGuard(Role.Admin))
   @UseGuards(JwtGuard)
   async getLocationId(
-    @Param('id', UUIDValidationPipe) id_location: string
+    @Param('id', UUIDValidationPipe) id_location: string,
   ): Promise<Location> {
     return this.locationService.getLocationById(id_location);
   }
@@ -80,7 +81,10 @@ export class LocationController {
     @Param('id', UUIDValidationPipe) id_location: string,
     @Body() updateCapacityDto: UpdateCapacityDto,
   ) {
-    return this.locationService.updateAvailableCapacity(id_location, updateCapacityDto);
+    return this.locationService.updateAvailableCapacity(
+      id_location,
+      updateCapacityDto,
+    );
   }
 
   @Put('update-status-location/:id')
@@ -91,7 +95,10 @@ export class LocationController {
     @Param('id', UUIDValidationPipe) id_location: string,
     @Body() updateStatusLocationDto: UpdateStatusLocationDto,
   ) {
-    return this.locationService.updateStatusLocation(id_location, updateStatusLocationDto);
+    return this.locationService.updateStatusLocation(
+      id_location,
+      updateStatusLocationDto,
+    );
   }
 
   @Get('inactive-location')
@@ -106,16 +113,14 @@ export class LocationController {
   @UseGuards(RoleGuard(Role.Admin))
   @UseGuards(JwtGuard)
   async removeLocation(
-    @Param('id', UUIDValidationPipe) id_location: string
+    @Param('id', UUIDValidationPipe) id_location: string,
   ): Promise<void> {
     return this.locationService.removeLocation(id_location);
   }
 
   @Post('search-location-name')
   @UseGuards(JwtGuard)
-  async filterLocationName(
-    @Body('search') search: string
-  ) {
+  async filterLocationName(@Body('search') search: string) {
     const filter = await this.locationService.filterLocationNameData(search);
 
     return filter;
@@ -123,9 +128,7 @@ export class LocationController {
 
   @Post('search-city-name')
   @UseGuards(JwtGuard)
-  async filterCityName(
-    @Body('search') search: string
-  ) {
+  async filterCityName(@Body('search') search: string) {
     const filter = await this.locationService.filterCitynameData(search);
 
     return filter;
